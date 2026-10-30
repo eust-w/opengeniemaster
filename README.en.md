@@ -61,6 +61,20 @@ flowchart LR
 
 OpenGenieMaster needs Python 3.10 or newer, and its core has **no third-party dependencies**. The `python3` that ships with macOS may be 3.9; if so, use a newer interpreter (for example, `uv python install 3.12`).
 
+> **Not on PyPI yet.** `pip install opengeniemaster` does not work yet, so install from source for now. This note will be removed once the package is on PyPI.
+
+Install from source:
+
+```bash
+git clone https://github.com/eust-w/opengeniemaster.git
+cd opengeniemaster
+pip install -e .
+```
+
+For the built-in Claude agent, use `pip install -e ".[claude]"` as the last step instead; it also installs the Anthropic SDK.
+
+Once the package is on PyPI, you will also be able to install it directly:
+
 ```bash
 pip install opengeniemaster
 ```
@@ -69,14 +83,6 @@ For the built-in Claude agent, install the extra that includes the Anthropic SDK
 
 ```bash
 pip install "opengeniemaster[claude]"
-```
-
-Or install from source:
-
-```bash
-git clone https://github.com/eust-w/opengeniemaster.git
-cd opengeniemaster
-pip install -e .
 ```
 
 ## Quick start
@@ -140,7 +146,7 @@ Once the agent is connected, have it read the MCP prompt `geniemaster_operator` 
 Without an external agent, the built-in agent can drive the harness with Claude directly. It needs the Anthropic Python SDK and API credentials:
 
 ```bash
-pip install "opengeniemaster[claude]"
+pip install -e ".[claude]"                           # from the repository root; on PyPI later: pip install "opengeniemaster[claude]"
 ogm agent --scenario office_supply_search            # defaults to claude-opus-5-5, effort=high
 ogm reflect --state-dir .ogm --llm                   # reflect with Claude
 ```

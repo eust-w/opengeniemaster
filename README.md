@@ -61,6 +61,20 @@ flowchart LR
 
 需要 Python ≥ 3.10，核心**没有任何第三方依赖**。macOS 自带的 `python3` 可能是 3.9，此时请换用较新的解释器（如 `uv python install 3.12`）。
 
+> **PyPI 包暂未发布**：目前 `pip install opengeniemaster` 还装不上，请先从源码安装。PyPI 发布后会删掉这条说明。
+
+从源码安装：
+
+```bash
+git clone https://github.com/eust-w/opengeniemaster.git
+cd opengeniemaster
+pip install -e .
+```
+
+需要内置 Claude Agent 时，把最后一步换成 `pip install -e ".[claude]"`，会一并安装 Anthropic SDK。
+
+PyPI 发布后，也可以直接安装：
+
 ```bash
 pip install opengeniemaster
 ```
@@ -69,14 +83,6 @@ pip install opengeniemaster
 
 ```bash
 pip install "opengeniemaster[claude]"
-```
-
-也可以从源码安装：
-
-```bash
-git clone https://github.com/eust-w/opengeniemaster.git
-cd opengeniemaster
-pip install -e .
 ```
 
 ## 快速开始
@@ -140,7 +146,7 @@ claude mcp add opengeniemaster -- ogm mcp --scenario restocking --state-dir .ogm
 不使用外部 Agent 时，可以让内置 Agent 直接用 Claude 驱动 Harness（需要 Anthropic Python SDK 和 API 凭据）：
 
 ```bash
-pip install "opengeniemaster[claude]"
+pip install -e ".[claude]"                           # 在仓库根目录执行；PyPI 发布后也可用 pip install "opengeniemaster[claude]"
 ogm agent --scenario office_supply_search            # 默认 claude-opus-5-5，effort=high
 ogm reflect --state-dir .ogm --llm                   # 用 Claude 做反思
 ```
