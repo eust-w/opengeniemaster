@@ -6,7 +6,7 @@ robot and reports the outcome. This lets you pilot the harness, memory and
 reflection loop against the real world before a policy is wired in, and the
 recorded episodes double as human-takeover data for the policy flywheel.
 
-    python examples/human_backend.py --robot-id g2-01 --port 8765
+    python examples/human_backend.py --robot-id g2-01 --host 0.0.0.0 --port 8765 --token "$TOKEN"
 
 Then point a fleet file at http://<host>:8765 and start ``ogm mcp --fleet``.
 To integrate a real policy, copy this file and replace each ``input()``
@@ -105,10 +105,13 @@ class HumanBackend(RobotBackend):
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--robot-id", default="robot-01")
-    p.add_argument("--host", default="0.0.0.0")
+    p.add_argument("--host", default="127.0.0.1", help="use 0.0.0.0 to accept connections from other machines")
     p.add_argument("--port", type=int, default=8765)
-    p.add_argument("--token", default=None)
+    p.add_argument("--token", default=None, help="bearer token the harness must send (strongly recommended off localhost)")
     args = p.parse_args()
+    if args.host not in ("127.0.0.1", "localhost", "::1") and not args.token:
+        print("warning: listening beyond localhost without --token; anyone on the network can command this robot",
+              file=sys.stderr)
     serve(RobotService(HumanBackend(args.robot_id), token=args.token), host=args.host, port=args.port)
 
 
