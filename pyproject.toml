@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "opengeniemaster"
+version = "0.1.0"
+description = "Open embodied continual harness for persistent multi-robot work: an Embodied Execution Protocol served over MCP, task continuity, shared admission, memory and reflection. Independent re-implementation inspired by AgiBot GenieMaster."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "eust-w" }]
+keywords = ["robotics", "embodied-ai", "agents", "mcp", "vla", "harness", "continual-learning", "multi-robot"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+# The core has no third-party dependencies.
+dependencies = []
+
+[project.optional-dependencies]
+# Built-in Claude agent and LLM reflector (the MCP server does not need it).
+claude = ["anthropic"]
+
+[project.scripts]
+ogm = "opengeniemaster.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/eust-w/opengeniemaster"
+Issues = "https://github.com/eust-w/opengeniemaster/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["opengeniemaster"]
+
+[tool.hatch.build.targets.sdist]
+include = ["opengeniemaster", "tests", "docs", "examples", "README.md", "LICENSE", "pyproject.toml"]

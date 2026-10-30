@@ -1,0 +1,4 @@
+# Append to ~/.codex/config.toml
+[mcp_servers.opengeniemaster]
+command = "python3"
+args = ["-m", "opengeniemaster", "mcp", "--scenario", "restocking", "--state-dir", ".ogm"]
