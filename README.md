@@ -1,5 +1,12 @@
 # OpenGenieMaster
 
+中文 | [English](README.en.md)
+
+[![ci](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml/badge.svg)](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/opengeniemaster)](https://pypi.org/project/opengeniemaster/)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 **面向持续多机器人作业的开源具身持续 Harness**：对智元 AGIBOT 于 2026-10-27 发布的具身 Agent 框架 [GenieMaster](https://genie-master.github.io/) 的独立开源复刻。
 
 编码 Agent（Claude Code、Codex 或内置的 Claude Agent）通过 **EEP（Embodied Execution Protocol，具身执行协议）** 调用机器人能力、下发多模态引导、读取物理反馈、跨中断续接任务，并把作业经验反思进长期记忆，整个过程不改动策略权重。EEP 以 MCP 服务器的形式提供，任何支持 MCP 的编码 Agent 都可以直接接入。
@@ -50,15 +57,35 @@ flowchart LR
   R -- 证据：观测 · 结果 · 进度 · 失败原因 --> H
 ```
 
-## 快速开始
+## 安装
 
-只需要 Python ≥ 3.10，核心**没有任何第三方依赖**。macOS 自带的 `python3` 可能是 3.9，此时请换用较新的解释器（如 `uv python install 3.12`），下文命令中的 `python3` 相应替换。
+需要 Python ≥ 3.10，核心**没有任何第三方依赖**。macOS 自带的 `python3` 可能是 3.9，此时请换用较新的解释器（如 `uv python install 3.12`）。
+
+```bash
+pip install opengeniemaster
+```
+
+需要内置 Claude Agent 时，安装附带 Anthropic SDK 的版本：
+
+```bash
+pip install "opengeniemaster[claude]"
+```
+
+也可以从源码安装：
 
 ```bash
 git clone https://github.com/eust-w/opengeniemaster.git
 cd opengeniemaster
-python3 -m opengeniemaster demo --scenario restocking --rounds 3 --trials 6
+pip install -e .
 ```
+
+## 快速开始
+
+```bash
+ogm demo --scenario restocking --rounds 3 --trials 6
+```
+
+未安装时，在仓库根目录用 `python3 -m opengeniemaster` 代替 `ogm`。
 
 演示会在仿真便利店里重复执行补货任务，每轮结束后反思。下面是一次实际输出：
 
@@ -76,10 +103,9 @@ Long-term memory:
 
 这两条经验对应 GenieMaster 主页公开的案例：价签遮挡导致头部相机找不到小挂钩，于是改用腕部相机近距离定位；夹爪在回撤时松开，于是要求运输途中保持闭合。在本仓库里，它们是由执行记录经反思、准入后**自动学到**的。
 
-安装后可以直接使用 `ogm` 命令：
+其他常用命令：
 
 ```bash
-pip install -e .
 ogm scenarios            # 列出仿真场景
 ogm demo -v              # 带逐次输出的演示
 ogm bench --experiment all --out results   # 全部评测，约 20 秒
@@ -92,10 +118,10 @@ GenieMaster 的架构图把 Claude Code、Codex、Kimi、DeepSeek 等编码 Agen
 Claude Code：
 
 ```bash
-claude mcp add opengeniemaster -- python3 -m opengeniemaster mcp --scenario restocking --state-dir .ogm
+claude mcp add opengeniemaster -- ogm mcp --scenario restocking --state-dir .ogm
 ```
 
-也可以把 [examples/claude_code.mcp.json](examples/claude_code.mcp.json) 复制为项目根目录下的 `.mcp.json`。Codex 的配置见 [examples/codex_config.toml](examples/codex_config.toml)。如果没有执行 `pip install -e .`，需要在仓库根目录启动 Agent，或通过环境变量设置 `PYTHONPATH`。
+也可以把 [examples/claude_code.mcp.json](examples/claude_code.mcp.json) 复制为项目根目录下的 `.mcp.json`。Codex 的配置见 [examples/codex_config.toml](examples/codex_config.toml)。从源码运行而没有安装时，把 `ogm` 换成 `python3 -m opengeniemaster`，并在仓库根目录启动 Agent。
 
 连接后，让 Agent 先读取 MCP prompt `geniemaster_operator`（完整的操作规程），然后给它一个目标，例如“把缺货的商品补上”。主要工具如下：
 
@@ -114,7 +140,7 @@ claude mcp add opengeniemaster -- python3 -m opengeniemaster mcp --scenario rest
 不使用外部 Agent 时，可以让内置 Agent 直接用 Claude 驱动 Harness（需要 Anthropic Python SDK 和 API 凭据）：
 
 ```bash
-pip install -e ".[claude]"
+pip install "opengeniemaster[claude]"
 ogm agent --scenario office_supply_search            # 默认 claude-opus-5-5，effort=high
 ogm reflect --state-dir .ogm --llm                   # 用 Claude 做反思
 ```
@@ -165,13 +191,22 @@ docs/           架构对照、EEP 规范、评测、调研
 examples/       MCP 配置、机队文件、业务记录、人在回路后端
 ```
 
-## 开发
+## 参与贡献
+
+欢迎提交 Issue 和 Pull Request，中英文均可。开始之前请先阅读：
+
+- [贡献指南](CONTRIBUTING.md)：开发环境、测试、提交规范和发版流程
+- [行为准则](CODE_OF_CONDUCT.md)
+- [安全策略](SECURITY.md)：安全问题请通过 GitHub 私密报告提交，不要发公开 Issue
+- [更新日志](CHANGELOG.md)
+
+运行测试：
 
 ```bash
 python3 -m unittest discover -s tests -v
 ```
 
-CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）在 Python 3.10–3.13 上运行测试、命令行冒烟测试和打包。
+CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）在 Python 3.10–3.13 上运行测试、命令行冒烟测试和打包。发布 GitHub Release 时，[发布工作流](.github/workflows/release.yml) 会构建并通过 PyPI Trusted Publishing 上传。
 
 ## 局限
 
@@ -183,3 +218,5 @@ CI（[.github/workflows/ci.yml](.github/workflows/ci.yml)）在 Python 3.10–3.
 ## 许可证
 
 本仓库原创内容采用 [MIT License](LICENSE)。引用的外部资料保留各自的版权与许可证，本仓库许可证不授予外部代码、模型权重或素材的使用权。
+
+GenieMaster、Genie、AgiBot / 智元等名称和标识归其各自权利人所有。本项目使用这些名称仅为说明研究和复刻对象，不代表任何认可或关联。

@@ -13,7 +13,7 @@
 在机器人旁的电脑上启动执行服务：
 
 ```bash
-python examples/human_backend.py --robot-id g2-01 --port 8765 --token "$G2_01_TOKEN"
+python examples/human_backend.py --robot-id g2-01 --host 0.0.0.0 --port 8765 --token "$G2_01_TOKEN"
 ```
 
 在 Agent 一侧启动 MCP 服务器：

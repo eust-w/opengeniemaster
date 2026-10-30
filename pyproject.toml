@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "opengeniemaster"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Open embodied continual harness for persistent multi-robot work: an Embodied Execution Protocol served over MCP, task continuity, shared admission, memory and reflection. Independent re-implementation inspired by AgiBot GenieMaster."
-readme = "README.md"
+readme = "README.en.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -35,10 +35,16 @@ ogm = "opengeniemaster.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/eust-w/opengeniemaster"
+Documentation = "https://github.com/eust-w/opengeniemaster#readme"
+Changelog = "https://github.com/eust-w/opengeniemaster/blob/main/CHANGELOG.md"
 Issues = "https://github.com/eust-w/opengeniemaster/issues"
+
+[tool.hatch.version]
+# Single source of truth for the version; the release workflow checks the tag against it.
+path = "opengeniemaster/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["opengeniemaster"]
 
 [tool.hatch.build.targets.sdist]
-include = ["opengeniemaster", "tests", "docs", "examples", "README.md", "LICENSE", "pyproject.toml"]
+include = ["opengeniemaster", "tests", "docs", "examples", "README.md", "README.en.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
