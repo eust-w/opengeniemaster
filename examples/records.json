@@ -1,0 +1,566 @@
+{
+ "catalog": {
+  "water-spring-500": {
+   "sku": "water-spring-500",
+   "name": "spring water 500ml",
+   "category": "drink",
+   "attributes": {
+    "color": "clear",
+    "cap": "blue"
+   },
+   "image": "sim://catalog/water-spring-500.png",
+   "group": "water-500",
+   "home": "shelf_A",
+   "slot": "r1c1",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "water-sparkling-500": {
+   "sku": "water-sparkling-500",
+   "name": "sparkling water 500ml",
+   "category": "drink",
+   "attributes": {
+    "color": "clear",
+    "cap": "green"
+   },
+   "image": "sim://catalog/water-sparkling-500.png",
+   "group": "water-500",
+   "home": "shelf_A",
+   "slot": "r1c2",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "water-electrolyte-500": {
+   "sku": "water-electrolyte-500",
+   "name": "electrolyte water 500ml",
+   "category": "drink",
+   "attributes": {
+    "color": "clear",
+    "cap": "white"
+   },
+   "image": "sim://catalog/water-electrolyte-500.png",
+   "group": "water-500",
+   "home": "shelf_A",
+   "slot": "r1c3",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "tea-green-500": {
+   "sku": "tea-green-500",
+   "name": "green tea 500ml",
+   "category": "drink",
+   "attributes": {
+    "label": "green"
+   },
+   "image": "sim://catalog/tea-green-500.png",
+   "group": "tea-500",
+   "home": "shelf_A",
+   "slot": "r1c4",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "tea-oolong-500": {
+   "sku": "tea-oolong-500",
+   "name": "oolong tea 500ml",
+   "category": "drink",
+   "attributes": {
+    "label": "brown"
+   },
+   "image": "sim://catalog/tea-oolong-500.png",
+   "group": "tea-500",
+   "home": "shelf_A",
+   "slot": "r2c1",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "tea-jasmine-500": {
+   "sku": "tea-jasmine-500",
+   "name": "jasmine tea 500ml",
+   "category": "drink",
+   "attributes": {
+    "label": "light green"
+   },
+   "image": "sim://catalog/tea-jasmine-500.png",
+   "group": "tea-500",
+   "home": "shelf_A",
+   "slot": "r2c2",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "cola-330": {
+   "sku": "cola-330",
+   "name": "cola 330ml can",
+   "category": "drink",
+   "attributes": {
+    "color": "red"
+   },
+   "image": "sim://catalog/cola-330.png",
+   "group": "can-330",
+   "home": "shelf_A",
+   "slot": "r2c3",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "cola-zero-330": {
+   "sku": "cola-zero-330",
+   "name": "zero cola 330ml can",
+   "category": "drink",
+   "attributes": {
+    "color": "black"
+   },
+   "image": "sim://catalog/cola-zero-330.png",
+   "group": "can-330",
+   "home": "shelf_A",
+   "slot": "r2c4",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "soda-lemon-330": {
+   "sku": "soda-lemon-330",
+   "name": "lemon soda 330ml can",
+   "category": "drink",
+   "attributes": {
+    "color": "yellow"
+   },
+   "image": "sim://catalog/soda-lemon-330.png",
+   "group": "can-330",
+   "home": "shelf_A",
+   "slot": "r3c1",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "soda-peach-330": {
+   "sku": "soda-peach-330",
+   "name": "limited peach soda 330ml can",
+   "category": "drink",
+   "attributes": {
+    "color": "pink"
+   },
+   "image": "sim://catalog/soda-peach-330.png",
+   "group": "can-330",
+   "home": "shelf_A",
+   "slot": "r3c2",
+   "mount": "shelf",
+   "tags": [
+    "new"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "chips-salted-70": {
+   "sku": "chips-salted-70",
+   "name": "salted chips 70g",
+   "category": "snack",
+   "attributes": {
+    "color": "yellow bag"
+   },
+   "image": "sim://catalog/chips-salted-70.png",
+   "group": "chips-70",
+   "home": "shelf_B",
+   "slot": "r1c1",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "chips-bbq-70": {
+   "sku": "chips-bbq-70",
+   "name": "bbq chips 70g",
+   "category": "snack",
+   "attributes": {
+    "color": "red bag"
+   },
+   "image": "sim://catalog/chips-bbq-70.png",
+   "group": "chips-70",
+   "home": "shelf_B",
+   "slot": "r1c2",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "chips-seaweed-70": {
+   "sku": "chips-seaweed-70",
+   "name": "seaweed chips 70g",
+   "category": "snack",
+   "attributes": {
+    "color": "green bag"
+   },
+   "image": "sim://catalog/chips-seaweed-70.png",
+   "group": "chips-70",
+   "home": "shelf_B",
+   "slot": "r1c3",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "noodle-beef": {
+   "sku": "noodle-beef",
+   "name": "beef noodle cup",
+   "category": "food",
+   "attributes": {
+    "color": "red lid"
+   },
+   "image": "sim://catalog/noodle-beef.png",
+   "group": "noodle-cup",
+   "home": "shelf_B",
+   "slot": "r1c4",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "noodle-seafood": {
+   "sku": "noodle-seafood",
+   "name": "seafood noodle cup",
+   "category": "food",
+   "attributes": {
+    "color": "blue lid"
+   },
+   "image": "sim://catalog/noodle-seafood.png",
+   "group": "noodle-cup",
+   "home": "shelf_B",
+   "slot": "r2c1",
+   "mount": "shelf",
+   "tags": [],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "latte-matcha-280": {
+   "sku": "latte-matcha-280",
+   "name": "matcha latte 280ml",
+   "category": "drink",
+   "attributes": {
+    "color": "green carton"
+   },
+   "image": "sim://catalog/latte-matcha-280.png",
+   "home": "shelf_A",
+   "slot": "r3c3",
+   "mount": "shelf",
+   "tags": [
+    "new"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "choco-bar": {
+   "sku": "choco-bar",
+   "name": "chocolate bar",
+   "category": "snack",
+   "attributes": {
+    "color": "brown wrapper"
+   },
+   "image": "sim://catalog/choco-bar.png",
+   "home": "shelf_B",
+   "slot": "r2c2",
+   "mount": "shelf",
+   "tags": [
+    "small"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "tissues-pack": {
+   "sku": "tissues-pack",
+   "name": "pocket tissues",
+   "category": "daily",
+   "attributes": {
+    "color": "white"
+   },
+   "image": "sim://catalog/tissues-pack.png",
+   "home": "shelf_B",
+   "slot": "r2c3",
+   "mount": "shelf",
+   "tags": [
+    "small"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "gum-mint": {
+   "sku": "gum-mint",
+   "name": "mint gum pack",
+   "category": "snack",
+   "attributes": {
+    "color": "blue"
+   },
+   "image": "sim://catalog/gum-mint.png",
+   "group": "gum-pack",
+   "home": "hook_wall",
+   "slot": "hook-1",
+   "mount": "hook",
+   "tags": [
+    "small",
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "gum-fruit": {
+   "sku": "gum-fruit",
+   "name": "fruit gum pack",
+   "category": "snack",
+   "attributes": {
+    "color": "pink"
+   },
+   "image": "sim://catalog/gum-fruit.png",
+   "group": "gum-pack",
+   "home": "hook_wall",
+   "slot": "hook-2",
+   "mount": "hook",
+   "tags": [
+    "small",
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "cable-usbc": {
+   "sku": "cable-usbc",
+   "name": "USB-C cable",
+   "category": "electronics",
+   "attributes": {
+    "color": "white box"
+   },
+   "image": "sim://catalog/cable-usbc.png",
+   "group": "cable",
+   "home": "hook_wall",
+   "slot": "hook-3",
+   "mount": "hook",
+   "tags": [
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "cable-lightning": {
+   "sku": "cable-lightning",
+   "name": "Lightning cable",
+   "category": "electronics",
+   "attributes": {
+    "color": "white box"
+   },
+   "image": "sim://catalog/cable-lightning.png",
+   "group": "cable",
+   "home": "hook_wall",
+   "slot": "hook-4",
+   "mount": "hook",
+   "tags": [
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "umbrella-travel": {
+   "sku": "umbrella-travel",
+   "name": "travel umbrella",
+   "category": "daily",
+   "attributes": {
+    "color": "navy"
+   },
+   "image": "sim://catalog/umbrella-travel.png",
+   "home": "hook_wall",
+   "slot": "hook-5",
+   "mount": "hook",
+   "tags": [
+    "new",
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "phone-stand": {
+   "sku": "phone-stand",
+   "name": "folding phone stand",
+   "category": "electronics",
+   "attributes": {
+    "color": "grey"
+   },
+   "image": "sim://catalog/phone-stand.png",
+   "home": "hook_wall",
+   "slot": "hook-6",
+   "mount": "hook",
+   "tags": [
+    "small",
+    "hook"
+   ],
+   "stock_location": "storage",
+   "likely_locations": []
+  },
+  "trash:paper-cup": {
+   "sku": "trash:paper-cup",
+   "name": "used paper coffee cup",
+   "category": "trash",
+   "attributes": {},
+   "image": "sim://catalog/trash:paper-cup.png",
+   "group": "cup",
+   "mount": "none",
+   "tags": [],
+   "likely_locations": []
+  },
+  "trash:wrapper": {
+   "sku": "trash:wrapper",
+   "name": "snack wrapper",
+   "category": "trash",
+   "attributes": {},
+   "image": "sim://catalog/trash:wrapper.png",
+   "mount": "none",
+   "tags": [],
+   "likely_locations": []
+  },
+  "trash:can": {
+   "sku": "trash:can",
+   "name": "empty can",
+   "category": "trash",
+   "attributes": {},
+   "image": "sim://catalog/trash:can.png",
+   "group": "can-330",
+   "mount": "none",
+   "tags": [],
+   "likely_locations": []
+  },
+  "coffee-cup-new": {
+   "sku": "coffee-cup-new",
+   "name": "sealed iced coffee cup (customer purchase)",
+   "category": "drink",
+   "attributes": {
+    "color": "brown",
+    "lid": "sealed"
+   },
+   "image": "sim://catalog/coffee-cup-new.png",
+   "group": "cup",
+   "mount": "none",
+   "tags": [],
+   "likely_locations": []
+  }
+ },
+ "places": {
+  "dock": {
+   "loc_id": "dock",
+   "kind": "dock",
+   "description": "robot charging dock",
+   "tags": [],
+   "slots": []
+  },
+  "counter": {
+   "loc_id": "counter",
+   "kind": "counter",
+   "description": "checkout counter; customers wait here",
+   "tags": [
+    "customer_area"
+   ],
+   "slots": []
+  },
+  "shelf_A": {
+   "loc_id": "shelf_A",
+   "kind": "shelf",
+   "description": "drinks shelf, 3 rows x 4 columns",
+   "tags": [],
+   "slots": [
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r1c4",
+    "r2c1",
+    "r2c2",
+    "r2c3",
+    "r2c4",
+    "r3c1",
+    "r3c2",
+    "r3c3",
+    "r3c4"
+   ]
+  },
+  "shelf_B": {
+   "loc_id": "shelf_B",
+   "kind": "shelf",
+   "description": "snacks and food shelf, 3 rows x 4 columns",
+   "tags": [],
+   "slots": [
+    "r1c1",
+    "r1c2",
+    "r1c3",
+    "r1c4",
+    "r2c1",
+    "r2c2",
+    "r2c3",
+    "r2c4",
+    "r3c1",
+    "r3c2",
+    "r3c3",
+    "r3c4"
+   ]
+  },
+  "hook_wall": {
+   "loc_id": "hook_wall",
+   "kind": "hook_wall",
+   "description": "peg wall with 8 hooks for hanging items; price tags hang below hooks",
+   "tags": [
+    "hooks"
+   ],
+   "slots": [
+    "hook-1",
+    "hook-2",
+    "hook-3",
+    "hook-4",
+    "hook-5",
+    "hook-6",
+    "hook-7",
+    "hook-8"
+   ]
+  },
+  "storage": {
+   "loc_id": "storage",
+   "kind": "storage",
+   "description": "back-room stock area, unsorted boxes",
+   "tags": [],
+   "slots": []
+  },
+  "table_1": {
+   "loc_id": "table_1",
+   "kind": "table",
+   "description": "eat-in table near the window",
+   "tags": [
+    "customer_area"
+   ],
+   "slots": []
+  },
+  "table_2": {
+   "loc_id": "table_2",
+   "kind": "table",
+   "description": "eat-in table at the back",
+   "tags": [
+    "customer_area"
+   ],
+   "slots": []
+  },
+  "bin": {
+   "loc_id": "bin",
+   "kind": "bin",
+   "description": "trash bin",
+   "tags": [],
+   "slots": []
+  }
+ },
+ "orders": [],
+ "notes": []
+}

@@ -4,3 +4,12 @@
 !.env.example
 /tmp/
 *.log
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+# harness state and benchmark output
+.ogm/
+results/

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "opengeniemaster": {
+      "command": "python3",
+      "args": ["-m", "opengeniemaster", "mcp", "--scenario", "restocking", "--state-dir", ".ogm"]
+    }
+  }
+}

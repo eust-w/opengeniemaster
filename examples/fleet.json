@@ -1,0 +1,21 @@
+{
+  "domain": "store",
+  "records": "records.json",
+  "robots": [
+    {
+      "robot_id": "g2-01",
+      "model": "wheeled_humanoid",
+      "endpoint": "http://192.168.1.21:8765",
+      "token_env": "G2_01_TOKEN",
+      "calibration": {"version": "2026-10-20", "valid": true},
+      "policy": {"name": "store-vla-v3", "training_scale": 1000}
+    },
+    {
+      "robot_id": "arx-01",
+      "model": "dual_arm_cart",
+      "endpoint": "http://192.168.1.31:8765",
+      "token_env": "ARX_01_TOKEN",
+      "calibration": {"version": "2026-10-18", "valid": true}
+    }
+  ]
+}
