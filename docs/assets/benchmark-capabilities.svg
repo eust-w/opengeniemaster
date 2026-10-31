@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Capability composition</title>
+  <desc id="d">Success rate grows as each capability is added, from 52% with arm IK alone to 99% with head and waist control.</desc>
+  <style>
+    :root{
+      --bg:#fcfcfb; --ink:#0b0b0b; --ink2:#3f3d3a; --ink3:#898781; --line:#e1e0d9; --bar:#2a78d6; --barHi:#1baf7a;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --ink3:#8b8a84; --line:#2c2c2a; --bar:#3987e5; --barHi:#199e70;
+      }
+    }
+    .bg{fill:var(--bg)}
+    .t1{fill:var(--ink); font-weight:800}
+    .t2{fill:var(--ink2)}
+    .grid{stroke:var(--line); stroke-width:1}
+    .axis{fill:var(--ink3); font-size:12; text-anchor:end}
+    .val{font-size:14; font-weight:700; text-anchor:middle}
+    .xl{fill:var(--ink2); font-size:13; font-weight:600; text-anchor:middle}
+    .xs{fill:var(--ink3); font-size:11; text-anchor:middle}
+  </style>
+
+  <rect class="bg" width="1200" height="450"/>
+  <text x="110" y="46" class="t1" font-size="24">Capability composition</text>
+  <text x="110" y="72" class="t2" font-size="13.5">success rate as each capability is added (cumulative) · fixed-location retrieval · 100 trials each</text>
+
+  <g>
+    <line class="grid" x1="110" y1="110" x2="1120" y2="110"/>
+    <line class="grid" x1="110" y1="177.5" x2="1120" y2="177.5"/>
+    <line class="grid" x1="110" y1="245" x2="1120" y2="245"/>
+    <line class="grid" x1="110" y1="312.5" x2="1120" y2="312.5"/>
+    <line class="grid" x1="110" y1="380" x2="1120" y2="380"/>
+    <text class="axis" x="98" y="114">100</text>
+    <text class="axis" x="98" y="181.5">75</text>
+    <text class="axis" x="98" y="249">50</text>
+    <text class="axis" x="98" y="316.5">25</text>
+    <text class="axis" x="98" y="384">0</text>
+  </g>
+
+  <!-- bars: value -> y = 380 - v*2.7 -->
+  <g>
+    <rect x="141" y="239.6" width="140" height="140.4" rx="6" fill="var(--bar)" opacity="0.45"/>
+    <rect x="343.5" y="212.6" width="140" height="167.4" rx="6" fill="var(--bar)" opacity="0.55"/>
+    <rect x="546" y="166.7" width="140" height="213.3" rx="6" fill="var(--bar)" opacity="0.7"/>
+    <rect x="748.5" y="139.7" width="140" height="240.3" rx="6" fill="var(--bar)" opacity="0.85"/>
+    <rect x="951" y="112.7" width="140" height="267.3" rx="6" fill="var(--barHi)"/>
+  </g>
+  <g class="val" fill="var(--bar)">
+    <text x="211" y="227.6">52</text>
+    <text x="413.5" y="200.6">62</text>
+    <text x="616" y="154.7">79</text>
+    <text x="818.5" y="127.7">89</text>
+  </g>
+  <text x="1021" y="100.7" class="val" fill="var(--barHi)">99</text>
+
+  <g>
+    <text x="211" y="404" class="xl">C1</text>
+    <text x="211" y="420" class="xs">arm IK</text>
+    <text x="413.5" y="404" class="xl">C2</text>
+    <text x="413.5" y="420" class="xs">+ grasp planning</text>
+    <text x="616" y="404" class="xl">C3</text>
+    <text x="616" y="420" class="xs">+ guidance policy</text>
+    <text x="818.5" y="404" class="xl">C4</text>
+    <text x="818.5" y="420" class="xs">+ object references</text>
+    <text x="1021" y="404" class="xl">C5</text>
+    <text x="1021" y="420" class="xs">+ head / waist</text>
+  </g>
+</svg>
