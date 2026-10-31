@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace" role="img" aria-labelledby="t d">
+  <title id="t">OpenGenieMaster demo</title>
+  <desc id="d">Terminal output of ogm demo, showing success, recoveries and learned long-term memory.</desc>
+
+  <rect x="16" y="16" width="1168" height="488" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+  <line x1="16" y1="66" x2="1184" y2="66" stroke="#21262d" stroke-width="1.5"/>
+  <circle cx="42" cy="41" r="6" fill="#ff5f56"/>
+  <circle cx="66" cy="41" r="6" fill="#ffbd2e"/>
+  <circle cx="90" cy="41" r="6" fill="#27c93f"/>
+  <text x="600" y="46" text-anchor="middle" font-size="13" fill="#8b949e">ogm demo --scenario restocking</text>
+
+  <!-- command -->
+  <text x="52" y="98" font-size="15.5">
+    <tspan fill="#7ee787">$ </tspan><tspan fill="#e6edf3">ogm demo --scenario restocking --rounds 3 --trials 6</tspan>
+  </text>
+  <text x="52" y="124" font-size="14" fill="#8b949e">OpenGenieMaster 0.1.0 demo: scenario=restocking, rounds=3, trials/round=6</text>
+
+  <text x="52" y="178" font-size="15.5" fill="#e6edf3">round 1: success <tspan fill="#7ee787">5/6</tspan>, recoveries 14, memory admitted <tspan fill="#58a6ff">2</tspan> <tspan fill="#d29922">-&gt; 2 entries</tspan></text>
+  <text x="52" y="204" font-size="15.5" fill="#e6edf3">round 2: success <tspan fill="#7ee787">6/6</tspan>, recoveries 13, memory admitted <tspan fill="#58a6ff">1</tspan> <tspan fill="#d29922">-&gt; 3 entries</tspan></text>
+  <text x="52" y="230" font-size="15.5" fill="#e6edf3">round 3: success <tspan fill="#7ee787">5/6</tspan>, recoveries 7,  memory admitted <tspan fill="#58a6ff">1</tspan> <tspan fill="#d29922">-&gt; 4 entries</tspan></text>
+
+  <text x="52" y="282" font-size="14.5" fill="#e6edf3" font-weight="600">Long-term memory <tspan fill="#8b949e" font-weight="400">(learned on the job, no weight updates)</tspan>:</text>
+
+  <text x="52" y="312" font-size="15" fill="#e6edf3"><tspan fill="#79c0ff">  [embodiment/guidance]</tspan> Keep the gripper closed during retraction and travel;</text>
+  <text x="52" y="334" font-size="15" fill="#e6edf3">                        release only at placement.</text>
+
+  <text x="52" y="364" font-size="15" fill="#e6edf3"><tspan fill="#d2a8ff">  [domain/guidance]    </tspan> For pick (look-alike items, at storage), observe first and</text>
+  <text x="52" y="386" font-size="15" fill="#e6edf3">                        give the policy a target box from the fresh detection.</text>
+
+  <text x="52" y="416" font-size="15" fill="#e6edf3"><tspan fill="#79c0ff">  [embodiment/guidance]</tspan> For hang (hook, hooks, at a hook wall), the head camera</text>
+  <text x="52" y="438" font-size="15" fill="#e6edf3">                        cannot localize the target reliably; approach and localize</text>
+  <text x="52" y="460" font-size="15" fill="#e6edf3">                        with the wrist camera first.</text>
+</svg>

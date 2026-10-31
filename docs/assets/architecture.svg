@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">OpenGenieMaster architecture</title>
+  <desc id="d">A coding agent drives the harness through EEP tool calls; the harness sends execution requests to robot services and reads back evidence.</desc>
+  <style>
+    :root{
+      --bg:#fcfcfb; --ink:#0b0b0b; --ink2:#3f3d3a; --ink3:#898781; --line:#d8d7d0;
+      --card:#ffffff; --agent:#2a78d6; --agentLt:#e8f1fc; --robot:#b97a00; --robotLt:#fbf0d9; --hs:#2a78d6;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --ink3:#8b8a84; --line:#2c2c2a;
+        --card:#20201f; --agent:#5aa7ff; --agentLt:#13263d; --robot:#e0a32b; --robotLt:#2a2210; --hs:#3987e5;
+      }
+    }
+    .bg{fill:var(--bg)}
+    .frame{fill:var(--card); stroke:var(--line); stroke-width:1.5}
+    .title{fill:var(--ink); font-weight:700}
+    .sub{fill:var(--ink2)}
+    .muted{fill:var(--ink3)}
+    .node{fill:var(--card); stroke:var(--line); stroke-width:1.2}
+    .nodeT{fill:var(--ink); font-weight:600}
+    .nodeS{fill:var(--ink3)}
+    .pillA{fill:var(--agentLt); stroke:var(--agent); stroke-opacity:.45; stroke-width:1.2}
+    .pillAT{fill:var(--agent)}
+    .pillR{fill:var(--robotLt); stroke:var(--robot); stroke-opacity:.5; stroke-width:1.2}
+    .pillRT{fill:var(--robot)}
+    .arrow{stroke:var(--ink2); stroke-width:2; fill:none}
+    .alabel{fill:var(--ink); font-weight:600}
+    .asub{fill:var(--ink3)}
+  </style>
+
+  <rect class="bg" width="1200" height="700"/>
+  <text x="60" y="44" class="muted" font-size="12" font-weight="600" letter-spacing="1.5">ARCHITECTURE</text>
+  <text x="60" y="72" class="title" font-size="24">The coding agent is the center of the loop</text>
+
+  <!-- ===== Coding Agent (top) ===== -->
+  <rect class="frame" x="280" y="100" width="640" height="140" rx="16"/>
+  <text x="600" y="132" text-anchor="middle" class="title" font-size="17">Coding Agent</text>
+  <g font-size="13.5" font-weight="600">
+    <rect class="pillA" x="306" y="158" width="196" height="40" rx="10"/>
+    <text x="404" y="183" text-anchor="middle" class="pillAT">Claude Code / Codex</text>
+    <rect class="pillA" x="516" y="158" width="196" height="40" rx="10"/>
+    <text x="614" y="183" text-anchor="middle" class="pillAT">Built-in Claude agent</text>
+    <rect class="pillA" x="726" y="158" width="168" height="40" rx="10"/>
+    <text x="810" y="183" text-anchor="middle" class="pillAT">Scripted orchestrator</text>
+  </g>
+
+  <!-- ===== Harness (middle) ===== -->
+  <rect class="frame" x="60" y="300" width="1080" height="244" rx="16" stroke="var(--hs)" stroke-width="1.6"/>
+  <text x="90" y="332" class="title" font-size="17">OpenGenieMaster Harness</text>
+  <text x="1110" y="332" text-anchor="end" class="muted" font-size="12.5">EEP over MCP · stdio · zero deps</text>
+
+  <g>
+    <rect class="node" x="90" y="350" width="324" height="74" rx="10"/>
+    <text x="108" y="376" class="nodeT" font-size="14">Domain</text>
+    <text x="108" y="398" class="nodeS" font-size="12">workflows · business records · criteria</text>
+
+    <rect class="node" x="438" y="350" width="324" height="74" rx="10"/>
+    <text x="456" y="376" class="nodeT" font-size="14">Embodiment</text>
+    <text x="456" y="398" class="nodeS" font-size="12">robots · calibration · skill bindings</text>
+
+    <rect class="node" x="786" y="350" width="324" height="74" rx="10"/>
+    <text x="804" y="376" class="nodeT" font-size="14">Shared Admission</text>
+    <text x="804" y="398" class="nodeS" font-size="12">validate · admit · safety interlock</text>
+
+    <rect class="node" x="90" y="442" width="324" height="74" rx="10"/>
+    <text x="108" y="468" class="nodeT" font-size="14">Continuity</text>
+    <text x="108" y="490" class="nodeS" font-size="12">tasks · dependencies · held objects</text>
+
+    <rect class="node" x="438" y="442" width="324" height="74" rx="10"/>
+    <text x="456" y="468" class="nodeT" font-size="14">Guidance</text>
+    <text x="456" y="490" class="nodeS" font-size="12">multimodal · co-designed with policy</text>
+
+    <rect class="node" x="786" y="442" width="324" height="74" rx="10"/>
+    <text x="804" y="468" class="nodeT" font-size="14">Memory</text>
+    <text x="804" y="490" class="nodeS" font-size="12">temporary → reflection → long-term</text>
+  </g>
+
+  <!-- ===== Robot (bottom) ===== -->
+  <rect class="frame" x="280" y="580" width="640" height="100" rx="16"/>
+  <text x="600" y="612" text-anchor="middle" class="title" font-size="17">Robot execution services</text>
+  <g font-size="13.5" font-weight="600">
+    <rect class="pillR" x="306" y="632" width="168" height="34" rx="10"/>
+    <text x="390" y="654" text-anchor="middle" class="pillRT">Policy VLA</text>
+    <rect class="pillR" x="486" y="632" width="168" height="34" rx="10"/>
+    <text x="570" y="654" text-anchor="middle" class="pillRT">Motion primitives</text>
+    <rect class="pillR" x="666" y="632" width="168" height="34" rx="10"/>
+    <text x="750" y="654" text-anchor="middle" class="pillRT">Perception / criteria</text>
+  </g>
+
+  <!-- arrows -->
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#7a7873"/>
+    </marker>
+  </defs>
+
+  <!-- agent -> harness -->
+  <line class="arrow" x1="430" y1="240" x2="430" y2="296" marker-end="url(#ah)"/>
+  <text x="412" y="272" text-anchor="end" class="alabel" font-size="13">EEP tool calls</text>
+
+  <!-- harness -> robot -->
+  <line class="arrow" x1="430" y1="544" x2="430" y2="576" marker-end="url(#ah)"/>
+  <text x="412" y="562" text-anchor="end" class="alabel" font-size="13">execution requests</text>
+  <text x="412" y="580" text-anchor="end" class="asub" font-size="11.5">language · affordance · action · primitive</text>
+
+  <!-- robot -> harness -->
+  <line class="arrow" x1="770" y1="580" x2="770" y2="548" marker-end="url(#ah)"/>
+  <text x="788" y="560" text-anchor="start" class="alabel" font-size="13">evidence</text>
+  <text x="788" y="578" text-anchor="start" class="asub" font-size="11.5">observation · result · progress · failure</text>
+</svg>

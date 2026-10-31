@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Overall success rate</title>
+  <desc id="d">Success rate of five methods across six tasks; OpenGenieMaster reaches 93.2% versus 12.5% for a vanilla VLA.</desc>
+  <style>
+    :root{
+      --bg:#fcfcfb; --ink:#0b0b0b; --ink2:#3f3d3a; --ink3:#898781; --line:#e1e0d9;
+      --vanilla:#9b9a95; --dual:#eb6834; --nomem:#1baf7a; --ogm:#2a78d6; --oracle:#eda100;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --ink3:#8b8a84; --line:#2c2c2a;
+        --vanilla:#757470; --dual:#d95926; --nomem:#199e70; --ogm:#3987e5; --oracle:#c98500;
+      }
+    }
+    .bg{fill:var(--bg)}
+    .t1{fill:var(--ink); font-weight:800}
+    .t2{fill:var(--ink2)}
+    .grid{stroke:var(--line); stroke-width:1}
+    .axis{fill:var(--ink3); font-size:12; text-anchor:middle}
+    .name{fill:var(--ink); font-weight:600; font-size:14.5}
+    .sub{fill:var(--ink3); font-size:11.5}
+    .val{fill:var(--ink2); font-size:13.5; font-weight:600}
+    .bar{stroke-width:0}
+  </style>
+
+  <rect class="bg" width="1200" height="560"/>
+  <text x="300" y="46" class="t1" font-size="24">Overall success rate</text>
+  <text x="300" y="74" class="t2" font-size="13.5">6 tasks × 100 trials per method · task completion (TC) shown next to each bar</text>
+
+  <!-- vertical gridlines + axis -->
+  <g>
+    <line class="grid" x1="300" y1="96" x2="300" y2="470"/>
+    <line class="grid" x1="475" y1="96" x2="475" y2="470"/>
+    <line class="grid" x1="650" y1="96" x2="650" y2="470"/>
+    <line class="grid" x1="825" y1="96" x2="825" y2="470"/>
+    <line class="grid" x1="1000" y1="96" x2="1000" y2="470"/>
+    <text class="axis" x="300" y="112">0</text>
+    <text class="axis" x="475" y="112">25</text>
+    <text class="axis" x="650" y="112">50</text>
+    <text class="axis" x="825" y="112">75</text>
+    <text class="axis" x="1000" y="112">100</text>
+    <text class="axis" x="1140" y="112">SR %</text>
+  </g>
+
+  <!-- row 1 vanilla -->
+  <text x="288" y="136" text-anchor="end" class="name">Vanilla VLA</text>
+  <text x="288" y="152" text-anchor="end" class="sub">end-to-end · goal only</text>
+  <rect class="bar" x="300" y="124" width="87.5" height="34" rx="6" fill="var(--vanilla)"/>
+  <text x="399.5" y="146" class="val">12.5% · TC 41.5%</text>
+
+  <!-- row 2 dual -->
+  <text x="288" y="212" text-anchor="end" class="name">Dual-system</text>
+  <text x="288" y="228" text-anchor="end" class="sub">VLM planner + policy</text>
+  <rect class="bar" x="300" y="200" width="147" height="34" rx="6" fill="var(--dual)"/>
+  <text x="459" y="222" class="val">21.0% · TC 53.5%</text>
+
+  <!-- row 3 ogm no memory -->
+  <text x="288" y="288" text-anchor="end" class="name">OpenGenieMaster (no memory)</text>
+  <text x="288" y="304" text-anchor="end" class="sub">harness · cold start</text>
+  <rect class="bar" x="300" y="276" width="634.9" height="34" rx="6" fill="var(--nomem)"/>
+  <text x="946.9" y="298" class="val">90.7% · TC 96.9%</text>
+
+  <!-- row 4 ogm -->
+  <text x="288" y="364" text-anchor="end" class="name">OpenGenieMaster</text>
+  <text x="288" y="380" text-anchor="end" class="sub">10 warm-up trials → memory</text>
+  <rect class="bar" x="300" y="352" width="652.4" height="34" rx="6" fill="var(--ogm)"/>
+  <text x="964.4" y="374" class="val" font-weight="700" fill="var(--ogm)">93.2% · TC 97.7%</text>
+
+  <!-- row 5 oracle -->
+  <text x="288" y="440" text-anchor="end" class="name">Oracle orchestration</text>
+  <text x="288" y="456" text-anchor="end" class="sub">ground-truth reference</text>
+  <rect class="bar" x="300" y="428" width="668.5" height="34" rx="6" fill="var(--oracle)"/>
+  <text x="980.5" y="450" class="val">95.5% · TC 98.4%</text>
+
+  <text x="300" y="520" class="sub" font-size="12">Simulation results (semantic simulator) — mechanism regression checks, not physical-robot results. See docs/benchmarks.md.</text>
+</svg>
