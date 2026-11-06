@@ -3,11 +3,11 @@ import threading
 import unittest
 import urllib.request
 
+from opengeniemaster.eep.types import ExecutionMode, ExecutionRequest, Guidance
 from opengeniemaster.embodiment.adapters import AdapterError, HttpAdapter
 from opengeniemaster.embodiment.profiles import CAPABILITY_LADDER, PROFILES, skills_for
 from opengeniemaster.embodiment.robots import Fleet, make_robot
 from opengeniemaster.embodiment.service import RobotService, SimBackend, make_server
-from opengeniemaster.eep.types import ExecutionMode, ExecutionRequest, Guidance
 from opengeniemaster.sim.scenes import build
 
 

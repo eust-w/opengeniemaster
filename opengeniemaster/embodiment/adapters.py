@@ -11,7 +11,9 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
+import time
 import urllib.error
 import urllib.request
 from collections import defaultdict, deque
@@ -34,6 +36,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from .robots import RobotInstance
 
 Transport = Callable[[str, str, "dict[str, Any] | None", float], "dict[str, Any]"]
+
+log = logging.getLogger(__name__)
 
 
 class AdapterError(RuntimeError):
@@ -66,11 +70,17 @@ class ExecutionAdapter:
         req = ExecutionRequest(robot_id=robot.robot_id, skill="wait", args={"seconds": seconds})
         self.execute(robot, req, ExecutionMode.PRIMITIVE)
 
-    def stop(self, robot: "RobotInstance") -> None:
-        pass
+    def stop(self, robot: "RobotInstance") -> bool:
+        """Halt the robot. Returns True when the robot side confirmed the stop."""
+        return True
 
-    def resume(self, robot: "RobotInstance") -> None:
-        pass
+    def resume(self, robot: "RobotInstance") -> bool:
+        """Clear a stop. Returns True when the robot side confirmed it."""
+        return True
+
+    def health(self, robot: "RobotInstance") -> dict[str, Any]:
+        """Liveness/protocol probe used by ``ogm doctor``; ``ok`` is False when the robot cannot be reached."""
+        return {"ok": True, "robot_id": robot.robot_id}
 
 
 def error_feedback(req: ExecutionRequest, mode: ExecutionMode, code: str, message: str, t: float = 0.0) -> Feedback:
@@ -117,11 +127,13 @@ class SimAdapter(ExecutionAdapter):
     def wait(self, robot: "RobotInstance", seconds: float) -> None:
         self.world.wait(robot.robot_id, seconds)
 
-    def stop(self, robot: "RobotInstance") -> None:
+    def stop(self, robot: "RobotInstance") -> bool:
         self.world.robot(robot.robot_id).stopped = True
+        return True
 
-    def resume(self, robot: "RobotInstance") -> None:
+    def resume(self, robot: "RobotInstance") -> bool:
         self.world.robot(robot.robot_id).stopped = False
+        return True
 
 
 def urllib_transport(method: str, url: str, body: dict[str, Any] | None, timeout: float, headers: dict[str, str] | None = None) -> dict[str, Any]:
@@ -138,33 +150,70 @@ def urllib_transport(method: str, url: str, body: dict[str, Any] | None, timeout
         raise AdapterError(f"{method} {url} -> HTTP {exc.code}: {detail[:300]}", status=exc.code) from exc
     except (urllib.error.URLError, TimeoutError, OSError) as exc:
         raise AdapterError(f"{method} {url} failed: {exc}") from exc
-    return json.loads(payload) if payload else {}
+    if not payload:
+        return {}
+    try:
+        out = json.loads(payload)
+    except json.JSONDecodeError as exc:
+        raise AdapterError(f"{method} {url} returned malformed JSON: {exc}") from exc
+    if not isinstance(out, dict):
+        raise AdapterError(f"{method} {url} returned {type(out).__name__}, expected a JSON object")
+    return out
 
 
 class HttpAdapter(ExecutionAdapter):
-    """Talks to a robot-side execution service implementing ``/eep/v0/*``."""
+    """Talks to a robot-side execution service implementing ``/eep/v0/*``.
+
+    Idempotent calls (observe, check, state, health, stop, resume) are retried
+    with exponential backoff on transport failures and 5xx answers; ``execute``
+    is never retried because a physical action must not run twice. ``state``
+    is cached for ``state_ttl_s`` seconds so that the harness clock does not
+    cost one HTTP round trip per robot on every event.
+    """
 
     name = "http"
 
-    def __init__(self, base_url: str, *, timeout: float = 60.0, transport: Transport | None = None, token: str | None = None) -> None:
+    def __init__(self, base_url: str, *, timeout: float = 60.0, transport: Transport | None = None, token: str | None = None,
+                 retries: int = 2, backoff_s: float = 0.25, state_ttl_s: float = 0.5,
+                 sleep: Callable[[float], None] = time.sleep, clock: Callable[[], float] = time.monotonic) -> None:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.retries = max(0, int(retries))
+        self.backoff_s = max(0.0, float(backoff_s))
+        self.state_ttl_s = max(0.0, float(state_ttl_s))
         headers = {"Authorization": f"Bearer {token}"} if token else None
         self._transport = transport or (lambda m, u, b, t: urllib_transport(m, u, b, t, headers))
+        self._sleep = sleep
+        self._clock = clock
         self._last_t = 0.0
+        self._state_cache: tuple[float, dict[str, Any]] | None = None
 
-    def _call(self, method: str, path: str, body: dict[str, Any] | None = None) -> dict[str, Any]:
-        return self._transport(method, f"{self.base_url}{path}", body, self.timeout)
+    def _call(self, method: str, path: str, body: dict[str, Any] | None = None, *, idempotent: bool = False) -> dict[str, Any]:
+        attempts = 1 + (self.retries if idempotent else 0)
+        for attempt in range(attempts):
+            try:
+                return self._transport(method, f"{self.base_url}{path}", body, self.timeout)
+            except AdapterError as exc:
+                status = _status_of(exc)
+                retryable = status is None or status >= 500
+                if not retryable or attempt + 1 >= attempts:
+                    raise
+                delay = self.backoff_s * (2 ** attempt)
+                log.warning("%s %s failed (%s); retry %d/%d in %.2fs", method, path, exc, attempt + 1, self.retries, delay)
+                if delay:
+                    self._sleep(delay)
+        raise AssertionError("unreachable")  # pragma: no cover
+
+    def _invalidate(self) -> None:
+        self._state_cache = None
 
     def execute(self, robot: "RobotInstance", req: ExecutionRequest, mode: ExecutionMode) -> Feedback:
+        self._invalidate()
         try:
             out = self._call("POST", "/eep/v0/execute", {"request": req.to_dict(), "mode": mode.value})
             fb = Feedback.from_dict(out["feedback"])
         except AdapterError as exc:
-            status = exc.status
-            if status is None:  # custom transports may only put the status in the message
-                m = re.search(r"\bHTTP (\d{3})\b", str(exc))
-                status = int(m.group(1)) if m else None
+            status = _status_of(exc)
             if status is not None and 400 <= status < 500:
                 # The service is up but refused this request (bad token, malformed request, wrong robot).
                 fb = error_feedback(req, mode, "precondition_failed", str(exc), self._last_t)
@@ -174,48 +223,81 @@ class HttpAdapter(ExecutionAdapter):
                 fb.failure_reason.evidence = {"http_status": status}
                 return fb
             return error_feedback(req, mode, "service_unavailable", str(exc), self._last_t)
-        except (KeyError, ValueError) as exc:
+        except (KeyError, ValueError, TypeError) as exc:
             return error_feedback(req, mode, "service_unavailable", f"malformed response: {exc}", self._last_t)
-        self._last_t = fb.observation.t
+        self._last_t = max(self._last_t, fb.observation.t)
         return fb
 
     def observe(self, robot: "RobotInstance", camera: str = "head", location: str | None = None) -> Observation:
         try:
-            out = self._call("POST", "/eep/v0/observe", {"camera": camera, "location": location})
+            out = self._call("POST", "/eep/v0/observe", {"camera": camera, "location": location}, idempotent=True)
             obs = Observation.from_dict(out["observation"])
-        except (AdapterError, KeyError, ValueError) as exc:
+        except (AdapterError, KeyError, ValueError, TypeError) as exc:
             return Observation(robot_id=robot.robot_id, t=self._last_t, camera=camera, flags=["service_unavailable"],
                                robot_state={"error": str(exc)})
-        self._last_t = obs.t
+        self._last_t = max(self._last_t, obs.t)
         return obs
 
     def check(self, robot: "RobotInstance", criterion: str, args: dict[str, Any], close_range: bool = False) -> CriterionResult:
         try:
-            out = self._call("POST", "/eep/v0/check", {"criterion": criterion, "args": args, "close_range": close_range})
+            out = self._call("POST", "/eep/v0/check", {"criterion": criterion, "args": args, "close_range": close_range}, idempotent=True)
             return CriterionResult.from_dict(out["result"])
-        except (AdapterError, KeyError, ValueError) as exc:
+        except (AdapterError, KeyError, ValueError, TypeError) as exc:
             return CriterionResult(name=criterion, passed=False, confidence=0.0, evidence={"error": str(exc)})
 
     def state(self, robot: "RobotInstance") -> dict[str, Any]:
+        now = self._clock()
+        if self._state_cache is not None and now - self._state_cache[0] < self.state_ttl_s:
+            return dict(self._state_cache[1])
         try:
-            return self._call("GET", "/eep/v0/state").get("state", {})
+            state = self._call("GET", "/eep/v0/state", idempotent=True).get("state", {})
         except AdapterError as exc:
             return {"error": str(exc)}
+        if not isinstance(state, dict):
+            return {"error": f"malformed state: {type(state).__name__}"}
+        self._state_cache = (now, state)
+        return dict(state)
 
     def now(self, robot: "RobotInstance") -> float:
-        return float(self.state(robot).get("clock_s", self._last_t))
-
-    def stop(self, robot: "RobotInstance") -> None:
         try:
-            self._call("POST", "/eep/v0/stop", {})
-        except AdapterError:
-            pass
+            t = float(self.state(robot).get("clock_s", self._last_t))
+        except (TypeError, ValueError):
+            t = self._last_t
+        self._last_t = max(self._last_t, t)
+        return self._last_t
 
-    def resume(self, robot: "RobotInstance") -> None:
+    def health(self, robot: "RobotInstance") -> dict[str, Any]:
         try:
-            self._call("POST", "/eep/v0/resume", {})
-        except AdapterError:
-            pass
+            out = self._call("GET", "/eep/v0/health", idempotent=True)
+        except AdapterError as exc:
+            return {"ok": False, "robot_id": robot.robot_id, "error": str(exc), "http_status": _status_of(exc)}
+        return {"ok": bool(out.get("ok")), "robot_id": out.get("robot_id"), "protocol": out.get("protocol")}
+
+    def stop(self, robot: "RobotInstance") -> bool:
+        self._invalidate()
+        try:
+            self._call("POST", "/eep/v0/stop", {}, idempotent=True)
+        except AdapterError as exc:
+            log.error("safety stop of %s was NOT confirmed by %s: %s", robot.robot_id, self.base_url, exc)
+            return False
+        return True
+
+    def resume(self, robot: "RobotInstance") -> bool:
+        self._invalidate()
+        try:
+            self._call("POST", "/eep/v0/resume", {}, idempotent=True)
+        except AdapterError as exc:
+            log.error("resume of %s was not confirmed by %s: %s", robot.robot_id, self.base_url, exc)
+            return False
+        return True
+
+
+def _status_of(exc: AdapterError) -> int | None:
+    """HTTP status of a transport error; custom transports may only put it in the message."""
+    if exc.status is not None:
+        return exc.status
+    m = re.search(r"\bHTTP (\d{3})\b", str(exc))
+    return int(m.group(1)) if m else None
 
 
 class ReplayMismatch(AdapterError):

@@ -18,6 +18,8 @@ controller and detectors) and run :func:`serve`. Request handling lives in
 
 from __future__ import annotations
 
+import hmac
+import ipaddress
 import json
 import logging
 import threading
@@ -35,6 +37,8 @@ from ..eep.types import (
 )
 
 log = logging.getLogger(__name__)
+
+MAX_BODY_BYTES = 8 * 1024 * 1024  # observations may carry inline images; anything larger is refused
 
 
 class RobotBackend:
@@ -99,10 +103,8 @@ class RobotService:
         self.token = token
 
     def handle(self, method: str, path: str, body: Any, headers: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
-        if self.token:
-            lowered = {str(k).lower(): v for k, v in (headers or {}).items()}
-            if lowered.get("authorization", "") != f"Bearer {self.token}":
-                return 401, {"error": {"code": "unauthorized", "message": "missing or invalid bearer token"}}
+        if self.token and not self.authorized(headers):
+            return 401, {"error": {"code": "unauthorized", "message": "missing or invalid bearer token"}}
         if body is None:
             body = {}
         if not isinstance(body, dict):
@@ -137,6 +139,13 @@ class RobotService:
             return 500, {"error": {"code": "backend_error", "message": str(exc)}}
         return 404, {"error": {"code": "not_found", "message": f"{method} {path}"}}
 
+    def authorized(self, headers: dict[str, str] | None) -> bool:
+        if not self.token:
+            return True
+        lowered = {str(k).lower(): str(v) for k, v in (headers or {}).items()}
+        # constant-time comparison so that the token cannot be recovered from response timing
+        return hmac.compare_digest(lowered.get("authorization", "").encode("utf-8"), f"Bearer {self.token}".encode())
+
     def as_transport(self):
         """In-process transport for :class:`HttpAdapter` (no sockets needed)."""
 
@@ -153,7 +162,12 @@ class RobotService:
         return transport
 
 
-def make_server(service: RobotService, host: str = "127.0.0.1", port: int = 8765) -> ThreadingHTTPServer:
+def make_server(service: RobotService, host: str = "127.0.0.1", port: int = 8765, *,
+                max_body: int = MAX_BODY_BYTES) -> ThreadingHTTPServer:
+    if not service.token and not _is_loopback(host):
+        log.warning("serving %s on %s without a bearer token: anyone on the network can command this robot",
+                    service.backend.robot_id, host)
+
     class Handler(BaseHTTPRequestHandler):
         def _reply(self, status: int, payload: dict[str, Any]) -> None:
             data = json.dumps(payload).encode("utf-8")
@@ -164,12 +178,27 @@ def make_server(service: RobotService, host: str = "127.0.0.1", port: int = 8765
             self.wfile.write(data)
 
         def _dispatch(self, method: str) -> None:
-            length = int(self.headers.get("Content-Length") or 0)
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except ValueError:
+                length = -1
+            if length < 0:
+                self._reply(400, {"error": {"code": "invalid_request", "message": "invalid Content-Length"}})
+                return
+            if length > max_body:
+                self.close_connection = True
+                self._reply(413, {"error": {"code": "payload_too_large", "message": f"body exceeds {max_body} bytes"}})
+                return
+            if length and not service.authorized(dict(self.headers.items())):
+                # do not read (or parse) bodies from unauthenticated clients
+                self.close_connection = True
+                self._reply(401, {"error": {"code": "unauthorized", "message": "missing or invalid bearer token"}})
+                return
             body = None
             if length:
                 try:
                     body = json.loads(self.rfile.read(length).decode("utf-8"))
-                except json.JSONDecodeError:
+                except (json.JSONDecodeError, UnicodeDecodeError):
                     self._reply(400, {"error": {"code": "invalid_json", "message": "body is not JSON"}})
                     return
             status, payload = service.handle(method, self.path.split("?", 1)[0], body, dict(self.headers.items()))
@@ -185,6 +214,15 @@ def make_server(service: RobotService, host: str = "127.0.0.1", port: int = 8765
             log.debug("%s - %s", self.address_string(), fmt % args)
 
     return ThreadingHTTPServer((host, port), Handler)
+
+
+def _is_loopback(host: str) -> bool:
+    if host in ("localhost", ""):
+        return host == "localhost"
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 def serve(service: RobotService, host: str = "127.0.0.1", port: int = 8765) -> None:

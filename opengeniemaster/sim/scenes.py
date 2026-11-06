@@ -16,7 +16,7 @@ import random
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from ..domain.records import BusinessRecords, CatalogItem, Order, PlaceInfo
+from ..domain.records import BusinessRecords, CatalogItem, PlaceInfo
 from ..embodiment.profiles import PROFILES
 from .policy import PolicyCard, SimParams
 from .world import Intrusion, Outage, Place, SimRobot, SimWorld, Thing
@@ -367,7 +367,7 @@ def store_cleaning(seed: int, *, fleet=DEFAULT_FLEET, training_scale: int = 1000
     for loc in tables:
         by_id[loc].state["dirty"] = True
         for sku in rng.sample(trash_kinds, 2):
-            t = _thing(things, counter, records, sku, loc, tags={"small"} if sku == "trash:wrapper" else set())
+            _thing(things, counter, records, sku, loc, tags={"small"} if sku == "trash:wrapper" else set())
             trash_list.append({"sku": sku, "location": loc})
     # A customer's sealed purchase sits on table_1 and must not be thrown away.
     _thing(things, counter, records, "coffee-cup-new", "table_1")

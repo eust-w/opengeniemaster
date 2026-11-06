@@ -1,6 +1,7 @@
 import unittest
 from dataclasses import replace
 
+from helpers import create_scenario_task, sim
 from opengeniemaster.bench.methods import METHODS, Method, run_trial
 from opengeniemaster.harness.admission import SharedAdmission
 from opengeniemaster.harness.orchestrator import DUAL_SYSTEM, GENIEMASTER, VANILLA_VLA, ScriptedOrchestrator
@@ -8,8 +9,6 @@ from opengeniemaster.harness.practice import capability_gaps, plan_practice
 from opengeniemaster.memory.reflection import RuleReflector, reflect
 from opengeniemaster.memory.store import MemoryStore
 from opengeniemaster.sim.scenes import BENCH_TASKS
-
-from helpers import create_scenario_task, sim
 
 
 def success_rate(task, method, seeds, **kw):

@@ -1,12 +1,11 @@
 import unittest
 
-from opengeniemaster.eep.types import Guidance, SpatialCue, StepStatus, TaskStatus
+from helpers import create_scenario_task, req, sim
 from opengeniemaster.eep.errors import Conflict, InvalidRequest, NotFound
+from opengeniemaster.eep.types import Guidance, SpatialCue, StepStatus, TaskStatus
 from opengeniemaster.embodiment.robots import Calibration
 from opengeniemaster.harness.admission import SharedAdmission
 from opengeniemaster.sim.world import Intrusion
-
-from helpers import create_scenario_task, req, sim
 
 
 class CapabilityTest(unittest.TestCase):

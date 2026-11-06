@@ -661,7 +661,8 @@ class Harness:
     def stop_robot(self, robot_id: str, reason: str = "operator stop") -> dict[str, Any]:
         """Operator stop: the robot halts and its tasks pause until someone resumes them explicitly."""
         robot = self.fleet.get(robot_id)
-        robot.adapter.stop(robot)
+        # Fail safe: the harness blocks the robot locally even if its execution service did not confirm the stop.
+        confirmed = robot.adapter.stop(robot) is not False
         robot.status = "stopped"
         paused = []
         for task in self.tasks.list([TaskStatus.ACTIVE, TaskStatus.INTERRUPTED, TaskStatus.PAUSED]):
@@ -669,19 +670,29 @@ class Harness:
                    for s in task.steps) or robot_id in task.held_objects:
                 self.tasks.interrupt(task, t=self.now(robot_id), note=f"{robot_id} stopped: {reason}", status=TaskStatus.PAUSED)
                 paused.append(task.task_id)
-        self.events.emit("stop", self.now(robot_id), {"robot_id": robot_id, "reason": reason, "paused_tasks": paused})
+        self.events.emit("stop", self.now(robot_id), {"robot_id": robot_id, "reason": reason, "paused_tasks": paused,
+                                                      "confirmed": confirmed})
         self.tasks.save()
-        return {"robot_id": robot_id, "status": "stopped", "paused_tasks": paused}
+        out: dict[str, Any] = {"robot_id": robot_id, "status": "stopped", "paused_tasks": paused, "confirmed": confirmed}
+        if not confirmed:
+            self.counters["stop_unconfirmed"] += 1
+            out["warning"] = ("the robot's execution service did NOT confirm the stop; the harness will refuse further requests to it, "
+                              "but the robot may still be moving - use its physical emergency stop")
+        return out
 
     def resume_robot(self, robot_id: str) -> dict[str, Any]:
         """Clear the stop. Paused tasks stay paused until resumed (eep_task_update action=resume)."""
         robot = self.fleet.get(robot_id)
-        robot.adapter.resume(robot)
+        if robot.adapter.resume(robot) is False:
+            # Keep the robot blocked: its service may still consider itself stopped (or be unreachable).
+            self.events.emit("resume", self.now(robot_id), {"robot_id": robot_id, "confirmed": False})
+            return {"robot_id": robot_id, "status": robot.status, "confirmed": False,
+                    "warning": "the robot's execution service did not confirm the resume; it stays stopped"}
         robot.status = "idle"
         paused = [t.task_id for t in self.tasks.list([TaskStatus.PAUSED])
                   if any(s.assigned_robot == robot_id for s in t.steps) or robot_id in t.held_objects]
-        self.events.emit("resume", self.now(robot_id), {"robot_id": robot_id})
-        return {"robot_id": robot_id, "status": "idle", "paused_tasks": paused}
+        self.events.emit("resume", self.now(robot_id), {"robot_id": robot_id, "confirmed": True})
+        return {"robot_id": robot_id, "status": "idle", "paused_tasks": paused, "confirmed": True}
 
     # -------------------------------------------------------------- domain tools
 

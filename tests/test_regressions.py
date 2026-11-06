@@ -2,12 +2,12 @@
 
 import contextlib
 import io
-import json
 import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+from helpers import create_scenario_task, req, sim
 from opengeniemaster.agents.llm_agent import ClaudeAgent
 from opengeniemaster.agents.mcp_server import MCPServer
 from opengeniemaster.cli import main as cli_main
@@ -24,8 +24,6 @@ from opengeniemaster.memory.reflection import Proposal
 from opengeniemaster.memory.store import ExecutionRecord, MemoryEntry, MemoryStore
 from opengeniemaster.replay import replay
 from opengeniemaster.sim.scenes import build
-
-from helpers import create_scenario_task, req, sim
 
 
 def record(rid, *, kind="execution", domain="store", model="wheeled_humanoid", skill="pick"):

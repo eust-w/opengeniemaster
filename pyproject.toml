@@ -48,3 +48,17 @@ packages = ["opengeniemaster"]
 
 [tool.hatch.build.targets.sdist]
 include = ["opengeniemaster", "tests", "docs", "examples", "README.md", "README.en.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py310"
+extend-exclude = ["results"]
+
+[tool.ruff.lint]
+# Correctness-focused rules; style is left to review.
+select = ["E4", "E7", "E9", "F", "I", "B", "PLE"]
+# I, O, S, B are deliberate one-letter JSON-schema constants in agents/tools.py.
+ignore = ["E741"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["opengeniemaster", "helpers"]

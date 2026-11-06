@@ -28,7 +28,7 @@ _EXPORTS = {
     "run_task": "orchestrator",
 }
 
-__all__ = sorted(_EXPORTS)
+__all__ = list(_EXPORTS)  # noqa: PLE0605 - lazily resolved names; a literal would duplicate _EXPORTS
 
 
 def __getattr__(name: str) -> Any:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,8 @@ from .harness.events import EventLog
 from .harness.harness import Harness, HarnessConfig
 from .memory.store import MemoryStore
 from .sim.scenes import Scenario, build
+
+log = logging.getLogger(__name__)
 
 
 def harness_from_scenario(scenario: Scenario, *, memory: MemoryStore | None = None, admission: SharedAdmission | None = None,
@@ -75,7 +78,11 @@ def harness_from_fleet_file(path: str | Path, *, state_dir: str | Path | None = 
     fleet = Fleet()
     for row in spec.get("robots", []):
         token = os.environ.get(row["token_env"]) if row.get("token_env") else None
-        adapter = HttpAdapter(row["endpoint"], token=token, timeout=float(row.get("timeout_s", 60.0)))
+        if row.get("token_env") and not token:
+            log.warning("robot %s: environment variable %s is not set; requests will be sent without a token",
+                        row["robot_id"], row["token_env"])
+        adapter = HttpAdapter(row["endpoint"], token=token, timeout=float(row.get("timeout_s", 60.0)),
+                              retries=int(row.get("retries", 2)))
         robot = make_robot(row["robot_id"], row["model"], adapter, features=row.get("features"), policy=row.get("policy"))
         cal = row.get("calibration") or {}
         robot.calibration = Calibration(version=str(cal.get("version", "factory")), valid=bool(cal.get("valid", True)),

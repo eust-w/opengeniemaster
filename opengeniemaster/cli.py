@@ -203,7 +203,7 @@ def cmd_replay(args: argparse.Namespace) -> int:
     from .harness.events import EventLog
     from .replay import replay
 
-    report = replay(EventLog.load(args.events), scenario=args.scenario, seed=args.seed, memory_dir=args.memory_dir)
+    report = replay(EventLog.load(args.events, include_rotated=args.include_rotated), scenario=args.scenario, seed=args.seed, memory_dir=args.memory_dir)
     _print(report.to_dict())
     return 0 if report.ok else 1
 
@@ -214,11 +214,25 @@ def cmd_dataset(args: argparse.Namespace) -> int:
     from .memory.store import TemporaryMemory
 
     records = TemporaryMemory(Path(args.memory_dir)).records if args.memory_dir else []
-    _print(export(EventLog.load(args.events), args.out, records=records, include_failures=not args.positives_only))
+    _print(export(EventLog.load(args.events, include_rotated=args.include_rotated), args.out, records=records, include_failures=not args.positives_only))
     return 0
 
 
+def cmd_doctor(args: argparse.Namespace) -> int:
+    from .doctor import run
+
+    logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
+    report = run(fleet=args.fleet, state_dir=args.state_dir, timeout=args.timeout)
+    if args.json:
+        _print(report.to_dict())
+    else:
+        print(report.render())
+    return 0 if report.ok else 1
+
+
 def cmd_robot_service(args: argparse.Namespace) -> int:
+    import os
+
     from .embodiment.service import RobotService, SimBackend, serve
     from .sim.scenes import build
 
@@ -227,7 +241,8 @@ def cmd_robot_service(args: argparse.Namespace) -> int:
     if args.robot not in sc.world.robots:
         print(f"unknown robot {args.robot}; choose from {sorted(sc.world.robots)}", file=sys.stderr)
         return 2
-    serve(RobotService(SimBackend(sc.world, args.robot), token=args.token), host=args.host, port=args.port)
+    token = args.token or os.environ.get(args.token_env) or None
+    serve(RobotService(SimBackend(sc.world, args.robot), token=token), host=args.host, port=args.port)
     return 0
 
 
@@ -318,6 +333,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--scenario", default="restocking")
     sp.add_argument("--seed", type=int, default=0)
     sp.add_argument("--memory-dir", default=None)
+    sp.add_argument("--include-rotated", action="store_true", help="also read rotated files (events.jsonl.1, .2, ...)")
     sp.set_defaults(func=cmd_replay)
 
     sp = sub.add_parser("dataset", help="export policy-training episodes (filter, weight, relabel) from an event log")
@@ -325,6 +341,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", required=True)
     sp.add_argument("--memory-dir", default=None, help="memory directory to drop contradicted successes")
     sp.add_argument("--positives-only", action="store_true")
+    sp.add_argument("--include-rotated", action="store_true", help="also read rotated files (events.jsonl.1, .2, ...)")
     sp.set_defaults(func=cmd_dataset)
 
     sp = sub.add_parser("robot-service", help="serve one simulated robot through the robot-side HTTP contract")
@@ -333,8 +350,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--robot", default="wh-01")
     sp.add_argument("--host", default="127.0.0.1")
     sp.add_argument("--port", type=int, default=8765)
-    sp.add_argument("--token", default=None)
+    sp.add_argument("--token", default=None, help="bearer token (prefer --token-env: argv is visible to other users)")
+    sp.add_argument("--token-env", default="OGM_ROBOT_TOKEN", help="environment variable holding the bearer token")
     sp.set_defaults(func=cmd_robot_service)
+
+    sp = sub.add_parser("doctor", help="pre-flight checks: installation, state dir and (with --fleet) every robot service")
+    sp.add_argument("--fleet", default=None, help="JSON fleet file whose robot services should be probed")
+    sp.add_argument("--state-dir", default=None)
+    sp.add_argument("--timeout", type=float, default=5.0, help="seconds to wait for each robot probe")
+    sp.add_argument("--json", action="store_true", help="machine-readable output")
+    sp.set_defaults(func=cmd_doctor)
 
     sp = sub.add_parser("schema", help="print or write EEP JSON schemas")
     sp.add_argument("--out", default=None)

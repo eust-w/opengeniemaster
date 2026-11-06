@@ -7,11 +7,10 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
+from helpers import sim
 from opengeniemaster.agents.llm_agent import FALLBACK_BETA, ClaudeAgent
 from opengeniemaster.agents.mcp_server import MCPServer
 from opengeniemaster.agents.tools import ToolRegistry
-
-from helpers import sim
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -90,9 +89,8 @@ class MCPServerTest(unittest.TestCase):
         self.assertIn("restock the hooks", msg["messages"][0]["content"]["text"])
 
     def test_agent_led_reflection_through_tools(self):
-        from opengeniemaster.harness.orchestrator import GENIEMASTER, ScriptedOrchestrator
-
         from helpers import create_scenario_task
+        from opengeniemaster.harness.orchestrator import GENIEMASTER, ScriptedOrchestrator
 
         ScriptedOrchestrator(self.h, GENIEMASTER).run(create_scenario_task(self.h, self.sc).task_id)
         recs, _ = self.call("memory_records", {"limit": 50})

@@ -27,7 +27,8 @@ Model weights never change; only guidance, criteria, recovery and coordination r
 
 Safety
 - Never set pause_on_intrusion or keep_gripper_closed to false. If a person is in the workspace, wait or \
-pause; use eep_robot_stop when unsure.
+pause; use eep_robot_stop when unsure. If eep_robot_stop returns confirmed=false, the robot may still be \
+moving: tell the operator immediately and do not send that robot anything else.
 - Follow each domain's safety rules from eep_capabilities.
 
 Report what physically happened (from feedback and verification), not what you intended."""

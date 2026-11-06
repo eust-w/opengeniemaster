@@ -5,7 +5,7 @@
 [中文](README.md) | English
 
 [![ci](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml/badge.svg)](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/opengeniemaster)](https://pypi.org/project/opengeniemaster/)
+[![PyPI](https://img.shields.io/badge/PyPI-not%20yet%20published-lightgrey)](#installation)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/eust-w/opengeniemaster/blob/main/pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/eust-w/opengeniemaster/blob/main/LICENSE)
 
@@ -149,9 +149,12 @@ A robot only needs a small HTTP/JSON execution service (`/eep/v0/execute`, `/obs
 
 1. Subclass `opengeniemaster.embodiment.service.RobotBackend`, call your VLA inference service, whole-body controller, and detectors from it, then start it with `serve()`. [examples/human_backend.py](examples/human_backend.py) is a runnable human-in-the-loop backend — an operator carries out each request by teleoperation and reports the result — so you can try the whole loop before connecting a policy.
 2. Write a fleet file ([examples/fleet.json](examples/fleet.json)) with each robot's model, endpoint, token, and calibration version, plus business records ([examples/records.json](examples/records.json)).
-3. Start `ogm mcp --fleet examples/fleet.json --state-dir .ogm`.
+3. Check the fleet with `ogm doctor --fleet examples/fleet.json`: it probes every robot service (reachable, token accepted, same protocol version, controls the robot it is configured as) and exits non-zero if anything fails.
+4. Start `ogm mcp --fleet examples/fleet.json --state-dir .ogm`.
 
-Shared admission rejects a request when the robot is stopped, its calibration is invalid, the step's dependencies are not done, or a person has been seen in the workspace and the request does not declare a pause. `eep_robot_stop` is an emergency stop you can use at any time.
+Shared admission rejects a request when the robot is stopped, its calibration is invalid, the step's dependencies are not done, or a person has been seen in the workspace and the request does not declare a pause. `eep_robot_stop` is an emergency stop you can use at any time; when the robot's service does not confirm it, the result says `confirmed: false` and the harness keeps refusing requests to that robot, but it may still be moving, so keep a physical emergency stop within reach.
+
+Read-only calls (observe, check, state, stop, resume) are retried on network errors and 5xx answers (`retries` per robot in the fleet file, default 2); `execute` is never retried, so an action never runs twice. The robot service refuses bodies larger than 8 MiB, compares tokens in constant time, and warns when it listens beyond localhost without a token; pass the token through the `OGM_ROBOT_TOKEN` environment variable rather than `--token`.
 
 **This repository has not been verified on real robots.** Before connecting real hardware, make sure emergency stops, human takeover, and motion limits are in place.
 

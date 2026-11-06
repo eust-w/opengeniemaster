@@ -96,7 +96,7 @@ def _convert(tp: Any, value: Any, path: str) -> Any:
         if origin is tuple and args and args[-1] is not Ellipsis:
             if len(args) != len(value):
                 raise SerdeError(f"{path}: expected {len(args)} items, got {len(value)}")
-            return tuple(_convert(a, v, f"{path}[{i}]") for i, (a, v) in enumerate(zip(args, value)))
+            return tuple(_convert(a, v, f"{path}[{i}]") for i, (a, v) in enumerate(zip(args, value, strict=True)))
         item_tp = args[0] if args else Any
         items = [_convert(item_tp, v, f"{path}[{i}]") for i, v in enumerate(value)]
         if origin in (set, frozenset):

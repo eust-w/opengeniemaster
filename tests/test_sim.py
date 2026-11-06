@@ -1,7 +1,7 @@
 import unittest
 
 from opengeniemaster.eep.types import ExecutionMode, ExecutionRequest, Guidance, ObjectReference, SpatialCue
-from opengeniemaster.sim.policy import PolicyCard, SimParams
+from opengeniemaster.sim.policy import PolicyCard
 from opengeniemaster.sim.scenes import BENCH_TASKS, build
 from opengeniemaster.sim.world import Intrusion, Outage, Place, SimRobot, SimWorld, Thing
 

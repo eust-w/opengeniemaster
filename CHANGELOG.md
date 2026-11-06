@@ -4,6 +4,27 @@ This file records every notable change to OpenGenieMaster. The format follows [K
 
 ## [Unreleased]
 
+### Added
+
+- `ogm doctor`: pre-flight checks of the installation and state directory and, with `--fleet`, of every robot service (reachable, token accepted, protocol version, robot id, calibration). Exits non-zero when a check fails; `--json` for machine-readable output.
+- `ExecutionAdapter.health()` and a `retries` field per robot in fleet files.
+- `ogm robot-service --token-env` (default `OGM_ROBOT_TOKEN`) so that the token does not appear in the process list.
+- Ruff lint configuration and a CI lint job.
+- Event log rotation: a persistent `events.jsonl` rotates at 64 MiB and keeps 5 backups; sequence numbers continue across rotations. `EventLog.load(..., include_rotated=True)` and `ogm replay` / `ogm dataset --include-rotated` read the rotated files too. The in-memory copy keeps at most 50,000 recent rows.
+
+### Changed
+
+- `HttpAdapter` retries idempotent calls (observe, check, state, health, stop, resume) with exponential backoff on transport errors and 5xx answers; `execute` is never retried. `state` is cached for 0.5 s, so the harness clock no longer costs one HTTP request per robot per event.
+- `ogm doctor` probes all robots concurrently, so unreachable robots no longer add up their timeouts.
+- The README PyPI badge no longer points at a package that has not been published.
+- `ExecutionAdapter.stop()` / `resume()` return whether the robot confirmed. `eep_robot_stop` reports `confirmed` and a warning when the stop was not confirmed (the robot stays blocked in the harness); an unconfirmed resume leaves the robot stopped.
+
+### Fixed
+
+- A safety stop that failed to reach the robot was silently ignored.
+- Malformed JSON from a robot service crashed `state()`; it is now reported as an adapter error.
+- Robot service: bearer tokens are compared in constant time, bodies over 8 MiB get 413, an invalid `Content-Length` gets 400 instead of an exception, and bodies from unauthenticated clients are not parsed. It warns when listening beyond localhost without a token.
+
 ## [0.1.0] - 2026-10-30
 
 First public release.

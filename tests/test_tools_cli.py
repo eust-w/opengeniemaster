@@ -6,14 +6,13 @@ import unittest
 from dataclasses import replace
 from pathlib import Path
 
+from helpers import create_scenario_task, sim
 from opengeniemaster.bench import experiments
 from opengeniemaster.bench.report import render
 from opengeniemaster.cli import main
 from opengeniemaster.flywheel import build_episodes, export
 from opengeniemaster.harness.orchestrator import GENIEMASTER, ScriptedOrchestrator
 from opengeniemaster.replay import replay
-
-from helpers import create_scenario_task, sim
 
 
 def run_cli(*argv):

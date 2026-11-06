@@ -5,7 +5,7 @@
 中文 | [English](README.en.md)
 
 [![ci](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml/badge.svg)](https://github.com/eust-w/opengeniemaster/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/opengeniemaster)](https://pypi.org/project/opengeniemaster/)
+[![PyPI](https://img.shields.io/badge/PyPI-%E5%B0%9A%E6%9C%AA%E5%8F%91%E5%B8%83-lightgrey)](#安装)
 [![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -149,9 +149,12 @@ ogm reflect --state-dir .ogm --llm                   # 用 Claude 做反思
 
 1. 继承 `opengeniemaster.embodiment.service.RobotBackend`，在其中调用你的 VLA 推理服务、全身控制器和检测器，然后用 `serve()` 启动服务。[examples/human_backend.py](examples/human_backend.py) 是一个可直接运行的人在回路后端：每个请求交给操作员遥操作完成并回报结果，适合在接入策略之前试跑整个闭环。
 2. 编写机队文件 [examples/fleet.json](examples/fleet.json)，填写机器人型号、端点、令牌和标定版本，以及业务记录 [examples/records.json](examples/records.json)。
-3. 启动 `ogm mcp --fleet examples/fleet.json --state-dir .ogm`。
+3. 用 `ogm doctor --fleet examples/fleet.json` 做上线前检查：逐台探测机器人执行服务（能否连通、令牌是否被接受、协议版本是否一致、控制的是否就是配置里的那台机器人），任一项失败即以非零码退出。
+4. 启动 `ogm mcp --fleet examples/fleet.json --state-dir .ogm`。
 
-共享准入会拒绝以下请求：机器人已停止、标定失效、依赖未完成，或已观测到有人进入工作区却未声明暂停。`eep_robot_stop` 可随时急停。
+共享准入会拒绝以下请求：机器人已停止、标定失效、依赖未完成，或已观测到有人进入工作区却未声明暂停。`eep_robot_stop` 可随时急停；若机器人端没有确认停止，返回结果里会是 `confirmed: false`，Harness 会继续拒绝发给这台机器人的请求，但它可能仍在运动，请确保实体急停触手可及。
+
+只读调用（observe、check、state、stop、resume）遇到网络错误或 5xx 时会自动重试（机队文件里每台机器人的 `retries`，默认 2 次）；`execute` 从不重试，保证同一动作不会执行两次。机器人端服务会拒绝超过 8 MiB 的请求体、以恒定时间比较令牌，并在无令牌却监听非本机地址时告警；令牌请通过环境变量 `OGM_ROBOT_TOKEN` 传入，而不是 `--token`。
 
 **本仓库尚未在真机上验证。** 接入真机前请务必确保有急停、人工接管和动作范围限制。
 
